@@ -225,13 +225,13 @@ nav ul li a {
 # Hero
 --------------------------------------------------------------*/
 #hero {
-  background: url("../img/home-bg.jpg") repeat scroll center center/cover;
+  background: url("../img/mi-foto-1.jpg") repeat scroll center center/cover;
   height: 100vh;
   width: 100%;
 }
 
 #hero .hero-content {
-  height: 100vh;
+  height: 72vh;
   text-align: left;
   width: 100%;
   display: flex;
@@ -244,7 +244,7 @@ nav ul li a {
   font-weight: 700;
   margin-bottom: 10px;
   text-transform: uppercase;
-  color: #fff;
+  color: #AE270A;
 }
 
 .hero-content p {
@@ -253,7 +253,7 @@ nav ul li a {
   margin-top: 0;
   margin-bottom: 30px;
   text-transform: capitalize;
-  color: #fff;
+  color: #AE270A;
   font-weight: 500;
 }
 
