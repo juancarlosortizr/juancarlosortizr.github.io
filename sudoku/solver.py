@@ -1,3 +1,11 @@
+"""
+Note: Unfortunately, I couldn't find a way to run this inside the website.
+So, I translated all this code into JavaScript and wrote it in the "solver.js" file.
+Thus, this file doesn't actually provide any functionality to the sudoku solver
+other than illustrating the DFS in Python, which, in my opinion, is easier to read
+than in JS.
+"""
+
 import numpy as np
 
 class State:

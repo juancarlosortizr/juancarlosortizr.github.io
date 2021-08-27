@@ -1,6 +1,7 @@
 <DOCTYPE html>
     <html>
     <head>
+    <script type="text/javascript" src="solver.js"></script>  
     <title>Juan Carlos Ortiz</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -86,6 +87,28 @@
             flex-direction: column;
         }
     }
+
+    .grid-container {
+    display: inline-grid;
+    grid-template-columns: auto auto auto auto auto auto auto auto auto;
+    background-color: #c8a2c8;
+    padding: 5px;
+    }
+    .grid-item {
+    background-color: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(0, 0, 0, 0.8);
+    padding: 5px;
+    font-size: 18px;
+    text-align: center;
+    }   
+
+    .grid-container2 {
+    display: inline-grid;
+    grid-template-columns: 40px 40px 40px 40px 40px 40px 40px 40px 40px;
+    background-color: #c8a2c8;
+    padding: 5px;
+    }
+
     </style>
     </head>
     <body>
@@ -118,116 +141,217 @@
       <div class="main">
     
         <h2 id="sudoku">Sudoku Solver</h2>
-            <p>Input a solvable sudoku, and it'll spit out a solution! If it's unsolvable, it'll let you know.</p>
+            <p>Input a solvable sudoku, and it'll spit out a solution! If it's unsolvable, it'll let you know.
+
+                You can leave empty squares empty, or fill them out with a zero or a dot.
+            </p>
+
+            <!-- <div  class="fieldset ">
+                <div class="awesomeHorFrame"></div> 
+                <div class="awesomeVert leftFrame "></div>
+                <div class="awesomeVert rightFrame "></div> 
+                <form class=" set" name="variables" method="post">
+                                        Matrix dimension:&nbsp;
+                        <select name="n" title="n" class="loading" disabled data-start='2' data-end='100'>
+                            <option value="2">2</option><option value="100">100</option>            </select>
+                                                            <div class='forSetButton'><input type='submit' name='submitButton' class='r-button-disabled loading' id='setMatrixButton' value='Set matrix' disabled title='Loading...' data-loading-title /></div>            </form>
+                <div class="awesomeHorFrame"></div>
+            </div> -->
     
-            <p>
-                <form>
-                    <input type="number" id="quantity01" name="quantity" min="1" max="9">
-                    <input type="number" id="quantity02" name="quantity" min="1" max="9">
-                    <input type="number" id="quantity03" name="quantity" min="1" max="9">
-                    <input type="number" id="quantity04" name="quantity" min="1" max="9">
-                    <input type="number" id="quantity05" name="quantity" min="1" max="9">
-                    <input type="number" id="quantity06" name="quantity" min="1" max="9">
-                    <input type="number" id="quantity07" name="quantity" min="1" max="9">
-                    <input type="number" id="quantity08" name="quantity" min="1" max="9">
-                    <input type="number" id="quantity09" name="quantity" min="1" max="9">
-                </form>
+            
+                <div class="grid-container">
+                    <div class="grid-item"><input type="number" id="x1" name="quantity" min="1" max="9"></div>
+                    <div class="grid-item"><input type="number" id="x2" name="quantity" min="1" max="9"></div>
+                    <div class="grid-item"><input type="number" id="x3" name="quantity" min="1" max="9"></div>
+                    <div class="grid-item"><input type="number" id="x4" name="quantity" min="1" max="9"></div>
+                    <div class="grid-item"><input type="number" id="x5" name="quantity" min="1" max="9"></div>
+                    <div class="grid-item"><input type="number" id="x6" name="quantity" min="1" max="9"></div>
+                    <div class="grid-item"><input type="number" id="x7" name="quantity" min="1" max="9"></div>
+                    <div class="grid-item"><input type="number" id="x8" name="quantity" min="1" max="9"></div>
+                    <div class="grid-item"><input type="number" id="x9" name="quantity" min="1" max="9"></div>
 
-                <form>
-                    <input type="number" id="quantity11" name="quantity" min="1" max="9">
-                    <input type="number" id="quantity12" name="quantity" min="1" max="9">
-                    <input type="number" id="quantity13" name="quantity" min="1" max="9">
-                    <input type="number" id="quantity14" name="quantity" min="1" max="9">
-                    <input type="number" id="quantity15" name="quantity" min="1" max="9">
-                    <input type="number" id="quantity16" name="quantity" min="1" max="9">
-                    <input type="number" id="quantity17" name="quantity" min="1" max="9">
-                    <input type="number" id="quantity18" name="quantity" min="1" max="9">
-                    <input type="number" id="quantity19" name="quantity" min="1" max="9">
-                </form>
-                
-                <form>
-                    <input type="number" id="quantity21" name="quantity" min="1" max="9">
-                    <input type="number" id="quantity22" name="quantity" min="1" max="9">
-                    <input type="number" id="quantity23" name="quantity" min="1" max="9">
-                    <input type="number" id="quantity24" name="quantity" min="1" max="9">
-                    <input type="number" id="quantity25" name="quantity" min="1" max="9">
-                    <input type="number" id="quantity26" name="quantity" min="1" max="9">
-                    <input type="number" id="quantity27" name="quantity" min="1" max="9">
-                    <input type="number" id="quantity28" name="quantity" min="1" max="9">
-                    <input type="number" id="quantity29" name="quantity" min="1" max="9">
-                </form>
 
-                <form>
-                    <input type="number" id="quantity31" name="quantity" min="1" max="9">
-                    <input type="number" id="quantity32" name="quantity" min="1" max="9">
-                    <input type="number" id="quantity33" name="quantity" min="1" max="9">
-                    <input type="number" id="quantity34" name="quantity" min="1" max="9">
-                    <input type="number" id="quantity35" name="quantity" min="1" max="9">
-                    <input type="number" id="quantity36" name="quantity" min="1" max="9">
-                    <input type="number" id="quantity37" name="quantity" min="1" max="9">
-                    <input type="number" id="quantity38" name="quantity" min="1" max="9">
-                    <input type="number" id="quantity39" name="quantity" min="1" max="9">
-                </form>
+                    <div class="grid-item"><input type="number" id="x10" name="quantity" min="1" max="9"></div>
+                    <div class="grid-item"><input type="number" id="x11" name="quantity" min="1" max="9"></div>
+                    <div class="grid-item"><input type="number" id="x12" name="quantity" min="1" max="9"></div>
+                    <div class="grid-item"><input type="number" id="x13" name="quantity" min="1" max="9"></div>
+                    <div class="grid-item"><input type="number" id="x14" name="quantity" min="1" max="9"></div>
+                    <div class="grid-item"><input type="number" id="x15" name="quantity" min="1" max="9"></div>
+                    <div class="grid-item"><input type="number" id="x16" name="quantity" min="1" max="9"></div>
+                    <div class="grid-item"><input type="number" id="x17" name="quantity" min="1" max="9"></div>
+                    <div class="grid-item"><input type="number" id="x18" name="quantity" min="1" max="9"></div>
 
-                <form>
-                    <input type="number" id="quantity41" name="quantity" min="1" max="9">
-                    <input type="number" id="quantity42" name="quantity" min="1" max="9">
-                    <input type="number" id="quantity43" name="quantity" min="1" max="9">
-                    <input type="number" id="quantity44" name="quantity" min="1" max="9">
-                    <input type="number" id="quantity45" name="quantity" min="1" max="9">
-                    <input type="number" id="quantity46" name="quantity" min="1" max="9">
-                    <input type="number" id="quantity47" name="quantity" min="1" max="9">
-                    <input type="number" id="quantity48" name="quantity" min="1" max="9">
-                    <input type="number" id="quantity49" name="quantity" min="1" max="9">
-                </form>
+                    <div class="grid-item"><input type="number" id="x19" name="quantity" min="1" max="9"></div>
+                    <div class="grid-item"><input type="number" id="x20" name="quantity" min="1" max="9"></div>
+                    <div class="grid-item"><input type="number" id="x21" name="quantity" min="1" max="9"></div>
+                    <div class="grid-item"><input type="number" id="x22" name="quantity" min="1" max="9"></div>
+                    <div class="grid-item"><input type="number" id="x23" name="quantity" min="1" max="9"></div>
+                    <div class="grid-item"><input type="number" id="x24" name="quantity" min="1" max="9"></div>
+                    <div class="grid-item"><input type="number" id="x25" name="quantity" min="1" max="9"></div>
+                    <div class="grid-item"><input type="number" id="x26" name="quantity" min="1" max="9"></div>
+                    <div class="grid-item"><input type="number" id="x27" name="quantity" min="1" max="9"></div>
 
-                <form>
-                    <input type="number" id="quantity51" name="quantity" min="1" max="9">
-                    <input type="number" id="quantity52" name="quantity" min="1" max="9">
-                    <input type="number" id="quantity53" name="quantity" min="1" max="9">
-                    <input type="number" id="quantity54" name="quantity" min="1" max="9">
-                    <input type="number" id="quantity55" name="quantity" min="1" max="9">
-                    <input type="number" id="quantity56" name="quantity" min="1" max="9">
-                    <input type="number" id="quantity57" name="quantity" min="1" max="9">
-                    <input type="number" id="quantity58" name="quantity" min="1" max="9">
-                    <input type="number" id="quantity59" name="quantity" min="1" max="9">
-                </form>
+                    <div class="grid-item"><input type="number" id="x28" name="quantity" min="1" max="9"></div>
+                    <div class="grid-item"><input type="number" id="x29" name="quantity" min="1" max="9"></div>
+                    <div class="grid-item"><input type="number" id="x30" name="quantity" min="1" max="9"></div>
+                    <div class="grid-item"><input type="number" id="x31" name="quantity" min="1" max="9"></div>
+                    <div class="grid-item"><input type="number" id="x32" name="quantity" min="1" max="9"></div>
+                    <div class="grid-item"><input type="number" id="x33" name="quantity" min="1" max="9"></div>
+                    <div class="grid-item"><input type="number" id="x34" name="quantity" min="1" max="9"></div>
+                    <div class="grid-item"><input type="number" id="x35" name="quantity" min="1" max="9"></div>
+                    <div class="grid-item"><input type="number" id="x36" name="quantity" min="1" max="9"></div>
 
-                <form>
-                    <input type="number" id="quantity61" name="quantity" min="1" max="9">
-                    <input type="number" id="quantity62" name="quantity" min="1" max="9">
-                    <input type="number" id="quantity63" name="quantity" min="1" max="9">
-                    <input type="number" id="quantity64" name="quantity" min="1" max="9">
-                    <input type="number" id="quantity65" name="quantity" min="1" max="9">
-                    <input type="number" id="quantity66" name="quantity" min="1" max="9">
-                    <input type="number" id="quantity67" name="quantity" min="1" max="9">
-                    <input type="number" id="quantity68" name="quantity" min="1" max="9">
-                    <input type="number" id="quantity69" name="quantity" min="1" max="9">
-                </form>
+                    <div class="grid-item"><input type="number" id="x37" name="quantity" min="1" max="9"></div>
+                    <div class="grid-item"><input type="number" id="x38" name="quantity" min="1" max="9"></div>
+                    <div class="grid-item"><input type="number" id="x39" name="quantity" min="1" max="9"></div>
+                    <div class="grid-item"><input type="number" id="x40" name="quantity" min="1" max="9"></div>
+                    <div class="grid-item"><input type="number" id="x41" name="quantity" min="1" max="9"></div>
+                    <div class="grid-item"><input type="number" id="x42" name="quantity" min="1" max="9"></div>
+                    <div class="grid-item"><input type="number" id="x43" name="quantity" min="1" max="9"></div>
+                    <div class="grid-item"><input type="number" id="x44" name="quantity" min="1" max="9"></div>
+                    <div class="grid-item"><input type="number" id="x45" name="quantity" min="1" max="9"></div>
 
-                <form>
-                    <input type="number" id="quantity71" name="quantity" min="1" max="9">
-                    <input type="number" id="quantity72" name="quantity" min="1" max="9">
-                    <input type="number" id="quantity73" name="quantity" min="1" max="9">
-                    <input type="number" id="quantity74" name="quantity" min="1" max="9">
-                    <input type="number" id="quantity75" name="quantity" min="1" max="9">
-                    <input type="number" id="quantity76" name="quantity" min="1" max="9">
-                    <input type="number" id="quantity77" name="quantity" min="1" max="9">
-                    <input type="number" id="quantity78" name="quantity" min="1" max="9">
-                    <input type="number" id="quantity79" name="quantity" min="1" max="9">
-                </form>
+                    <div class="grid-item"><input type="number" id="x46" name="quantity" min="1" max="9"></div>
+                    <div class="grid-item"><input type="number" id="x47" name="quantity" min="1" max="9"></div>
+                    <div class="grid-item"><input type="number" id="x48" name="quantity" min="1" max="9"></div>
+                    <div class="grid-item"><input type="number" id="x49" name="quantity" min="1" max="9"></div>
+                    <div class="grid-item"><input type="number" id="x50" name="quantity" min="1" max="9"></div>
+                    <div class="grid-item"><input type="number" id="x51" name="quantity" min="1" max="9"></div>
+                    <div class="grid-item"><input type="number" id="x52" name="quantity" min="1" max="9"></div>
+                    <div class="grid-item"><input type="number" id="x53" name="quantity" min="1" max="9"></div>
+                    <div class="grid-item"><input type="number" id="x54" name="quantity" min="1" max="9"></div>
 
-                <form>
-                    <input type="number" id="quantity81" name="quantity" min="1" max="9">
-                    <input type="number" id="quantity82" name="quantity" min="1" max="9">
-                    <input type="number" id="quantity83" name="quantity" min="1" max="9">
-                    <input type="number" id="quantity84" name="quantity" min="1" max="9">
-                    <input type="number" id="quantity85" name="quantity" min="1" max="9">
-                    <input type="number" id="quantity86" name="quantity" min="1" max="9">
-                    <input type="number" id="quantity87" name="quantity" min="1" max="9">
-                    <input type="number" id="quantity88" name="quantity" min="1" max="9">
-                    <input type="number" id="quantity89" name="quantity" min="1" max="9">
-                </form>
+                    <div class="grid-item"><input type="number" id="x55" name="quantity" min="1" max="9"></div>
+                    <div class="grid-item"><input type="number" id="x56" name="quantity" min="1" max="9"></div>
+                    <div class="grid-item"><input type="number" id="x57" name="quantity" min="1" max="9"></div>
+                    <div class="grid-item"><input type="number" id="x58" name="quantity" min="1" max="9"></div>
+                    <div class="grid-item"><input type="number" id="x59" name="quantity" min="1" max="9"></div>
+                    <div class="grid-item"><input type="number" id="x60" name="quantity" min="1" max="9"></div>
+                    <div class="grid-item"><input type="number" id="x61" name="quantity" min="1" max="9"></div>
+                    <div class="grid-item"><input type="number" id="x62" name="quantity" min="1" max="9"></div>
+                    <div class="grid-item"><input type="number" id="x63" name="quantity" min="1" max="9"></div>
+
+                    <div class="grid-item"><input type="number" id="x64" name="quantity" min="1" max="9"></div>
+                    <div class="grid-item"><input type="number" id="x65" name="quantity" min="1" max="9"></div>
+                    <div class="grid-item"><input type="number" id="x66" name="quantity" min="1" max="9"></div>
+                    <div class="grid-item"><input type="number" id="x67" name="quantity" min="1" max="9"></div>
+                    <div class="grid-item"><input type="number" id="x68" name="quantity" min="1" max="9"></div>
+                    <div class="grid-item"><input type="number" id="x69" name="quantity" min="1" max="9"></div>
+                    <div class="grid-item"><input type="number" id="x70" name="quantity" min="1" max="9"></div>
+                    <div class="grid-item"><input type="number" id="x71" name="quantity" min="1" max="9"></div>
+                    <div class="grid-item"><input type="number" id="x72" name="quantity" min="1" max="9"></div>
+
+                    <div class="grid-item"><input type="number" id="x73" name="quantity" min="1" max="9"></div>
+                    <div class="grid-item"><input type="number" id="x74" name="quantity" min="1" max="9"></div>
+                    <div class="grid-item"><input type="number" id="x75" name="quantity" min="1" max="9"></div>
+                    <div class="grid-item"><input type="number" id="x76" name="quantity" min="1" max="9"></div>
+                    <div class="grid-item"><input type="number" id="x77" name="quantity" min="1" max="9"></div>
+                    <div class="grid-item"><input type="number" id="x78" name="quantity" min="1" max="9"></div>
+                    <div class="grid-item"><input type="number" id="x79" name="quantity" min="1" max="9"></div>
+                    <div class="grid-item"><input type="number" id="x80" name="quantity" min="1" max="9"></div>
+                    <div class="grid-item"><input type="number" id="x81" name="quantity" min="1" max="9"></div>
+                  </div>
+
+                <p> <button onclick="solveSudoku()">Click when ready!</button> </p>
+
+                <body> 
+                    Here is the solution board. If it is full of dots, that means no solution exists!
+                </body>
+                <p>
+
+                <body>    
+                <div class="grid-container2">
+                    <div class="grid-item"> <text id="board1"></text> </div>
+                    <div class="grid-item"> <text id="board2"></text> </div>
+                    <div class="grid-item"> <text id="board3"></text> </div>
+                    <div class="grid-item"> <text id="board4"></text> </div>
+                    <div class="grid-item"> <text id="board5"></text> </div>
+                    <div class="grid-item"> <text id="board6"></text> </div>
+                    <div class="grid-item"> <text id="board7"></text> </div>
+                    <div class="grid-item"> <text id="board8"></text> </div>
+                    <div class="grid-item"> <text id="board9"></text> </div>
+
+                    <div class="grid-item"> <text id="board10"></text> </div>
+                    <div class="grid-item"> <text id="board11"></text> </div>
+                    <div class="grid-item"> <text id="board12"></text> </div>
+                    <div class="grid-item"> <text id="board13"></text> </div>
+                    <div class="grid-item"> <text id="board14"></text> </div>
+                    <div class="grid-item"> <text id="board15"></text> </div>
+                    <div class="grid-item"> <text id="board16"></text> </div>
+                    <div class="grid-item"> <text id="board17"></text> </div>
+                    <div class="grid-item"> <text id="board18"></text> </div>
+
+                    <div class="grid-item"> <text id="board19"></text> </div>
+                    <div class="grid-item"> <text id="board20"></text> </div>
+                    <div class="grid-item"> <text id="board21"></text> </div>
+                    <div class="grid-item"> <text id="board22"></text> </div>
+                    <div class="grid-item"> <text id="board23"></text> </div>
+                    <div class="grid-item"> <text id="board24"></text> </div>
+                    <div class="grid-item"> <text id="board25"></text> </div>
+                    <div class="grid-item"> <text id="board26"></text> </div>
+                    <div class="grid-item"> <text id="board27"></text> </div>
+
+                    <div class="grid-item"> <text id="board28"></text> </div>
+                    <div class="grid-item"> <text id="board29"></text> </div>
+                    <div class="grid-item"> <text id="board30"></text> </div>
+                    <div class="grid-item"> <text id="board31"></text> </div>
+                    <div class="grid-item"> <text id="board32"></text> </div>
+                    <div class="grid-item"> <text id="board33"></text> </div>
+                    <div class="grid-item"> <text id="board34"></text> </div>
+                    <div class="grid-item"> <text id="board35"></text> </div>
+                    <div class="grid-item"> <text id="board36"></text> </div>
+
+                    <div class="grid-item"> <text id="board37"></text> </div>
+                    <div class="grid-item"> <text id="board38"></text> </div>
+                    <div class="grid-item"> <text id="board39"></text> </div>
+                    <div class="grid-item"> <text id="board40"></text> </div>
+                    <div class="grid-item"> <text id="board41"></text> </div>
+                    <div class="grid-item"> <text id="board42"></text> </div>
+                    <div class="grid-item"> <text id="board43"></text> </div>
+                    <div class="grid-item"> <text id="board44"></text> </div>
+                    <div class="grid-item"> <text id="board45"></text> </div>
+
+                    <div class="grid-item"> <text id="board46"></text> </div>
+                    <div class="grid-item"> <text id="board47"></text> </div>
+                    <div class="grid-item"> <text id="board48"></text> </div>
+                    <div class="grid-item"> <text id="board49"></text> </div>
+                    <div class="grid-item"> <text id="board50"></text> </div>
+                    <div class="grid-item"> <text id="board51"></text> </div>
+                    <div class="grid-item"> <text id="board52"></text> </div>
+                    <div class="grid-item"> <text id="board53"></text> </div>
+                    <div class="grid-item"> <text id="board54"></text> </div>
+
+                    <div class="grid-item"> <text id="board55"></text> </div>
+                    <div class="grid-item"> <text id="board56"></text> </div>
+                    <div class="grid-item"> <text id="board57"></text> </div>
+                    <div class="grid-item"> <text id="board58"></text> </div>
+                    <div class="grid-item"> <text id="board59"></text> </div>
+                    <div class="grid-item"> <text id="board60"></text> </div>
+                    <div class="grid-item"> <text id="board61"></text> </div>
+                    <div class="grid-item"> <text id="board62"></text> </div>
+                    <div class="grid-item"> <text id="board63"></text> </div>
+
+                    <div class="grid-item"> <text id="board64"></text> </div>
+                    <div class="grid-item"> <text id="board65"></text> </div>
+                    <div class="grid-item"> <text id="board66"></text> </div>
+                    <div class="grid-item"> <text id="board67"></text> </div>
+                    <div class="grid-item"> <text id="board68"></text> </div>
+                    <div class="grid-item"> <text id="board69"></text> </div>
+                    <div class="grid-item"> <text id="board70"></text> </div>
+                    <div class="grid-item"> <text id="board71"></text> </div>
+                    <div class="grid-item"> <text id="board72"></text> </div>
+
+                    <div class="grid-item"> <text id="board73"></text> </div>
+                    <div class="grid-item"> <text id="board74"></text> </div>
+                    <div class="grid-item"> <text id="board75"></text> </div>
+                    <div class="grid-item"> <text id="board76"></text> </div>
+                    <div class="grid-item"> <text id="board77"></text> </div>
+                    <div class="grid-item"> <text id="board78"></text> </div>
+                    <div class="grid-item"> <text id="board79"></text> </div>
+                    <div class="grid-item"> <text id="board80"></text> </div>
+                    <div class="grid-item"> <text id="board81"></text> </div>
+                </div>
+            </body>
 
             </p>
       </div>
