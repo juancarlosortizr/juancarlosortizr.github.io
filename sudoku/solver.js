@@ -42,14 +42,10 @@ function solveBoard(board){
         newBoard = new Array(81).fill(".");
         return newBoard;
     }
-    else {
-        //alert("The sudoku you inputted doesn't have violations!");
-    }
 
     if (solver.dfs(0,0)) {
         alert('A solution exists! It is:');
         solvedBoard = solver.get_board();
-        //alert(solvedBoard);
         newBoard = new Array(81).fill(".");
         for (let i=0; i<81; i++) {
             newBoard[i] = solvedBoard[Math.floor(i/9)][i - 9*Math.floor(i/9)];
@@ -129,7 +125,6 @@ class State{
     }
 
     is_currently_valid() {
-        //alert("Checking validity");
         // Returns true if board is currently valid
 
         // Check rows don't have repeat
@@ -144,9 +139,6 @@ class State{
                 }
             }
         }
-
-        //alert("rows valid");
-
         // Check columns don't have repeat
         for (let j=0; j<9; j++) {
             var currCol = new Set();
@@ -160,15 +152,12 @@ class State{
             }
         }
 
-
-        //alert("cols valid");
-
         //  Check boxes don't have repeat
         for (let i=0; i<3; i++) {
             for (let j=0; j<3; j++) {
                 var currBox = new Set();
                 for (let a=0; a<9; a++) {
-                    var currDigit = this.board[i+Math.floor(a/3)][j+(a-3*Math.floor(a/3))];
+                    var currDigit = this.board[3*i+Math.floor(a/3)][3*j+(a-3*Math.floor(a/3))];
                     if (currBox.has(currDigit)) {
                         return false;
                     }
@@ -178,9 +167,6 @@ class State{
                 }
             }
         }
-
-
-        //alert("boxes valid");
 
         return true;
     }
@@ -200,17 +186,11 @@ class State{
 
     forget_square(i,j) {
         // Forget digit in square (i,j)
-        //alert('Forget1');
         var myDigit = this.board[i][j];
-        //alert('Forget2');
         this.rows[i].delete(myDigit);
-        //alert('Forget3');
         this.cols[j].delete(myDigit);
-        //alert('Forget4');
         this.boxes[Math.floor(i/3)][Math.floor(j/3)].delete(myDigit);
-        //alert('Forget5');
         this.board[i][j] = ".";
-        //alert('Forget6');
     }
 
 }
@@ -223,7 +203,6 @@ class Solver {
     }
 
     dfs(i,j) {
-        //alert('new dfs '+i.toString()+","+j.toString());
         // Uses DFS to solve, starting at square (i,j)
         // Goes row by row
 
@@ -243,54 +222,24 @@ class Solver {
             return this.dfs(i, j+1);
         }
 
-        if (i==1 && j==6) {
-            //alert(this.get_board());
-        }
         // Else, check filling it in with 1 thru 9
         for (let digit=1; digit<10; digit++) {
 
-            if (i==1 && j==6) {
-                //alert('Trying '+digit.toString());
-            }
-
             if (this.state.is_valid(digit,i,j)) {
-
-                if (i==1 && j==6) {
-                    //alert('VALID DIGIT WITH 1,6!');
-                }
 
                 this.state.set_square(digit,i,j);
 
                 // Check if this branch finds a valid solution
                 if (this.dfs(i,j+1)) {
-                    if (i==0 && j==0) {
-                        //alert("Returning true on 0,0!");
-                    }
                     return true;
                 }
 
                 // Otherwise backtrack
-                //alert("Backtracking on"+i.toString()+","+j.toString()+" with digit "+this.state.get_square(i,j).toString());
                 this.forget_square(i,j);
-                //alert("FORGET WORKS");
-                //alert(this.state.get_square(i,j));
             }
-
-            if (i==1 && j==6) {
-                //alert("Digit failed on 1,6");
-            }
-
         }
 
         // If no digit works, then sudoku is unsolvable
-        if (i==0 && j==0) {
-            //alert("Returning false on 0,0!");
-        }
-
-        if (i==1 && j==6) {
-            //alert("Failed on "+i.toString()+","+j.toString());
-        }
-
         return false;
     }
 
