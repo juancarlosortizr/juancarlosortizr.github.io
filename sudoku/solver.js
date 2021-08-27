@@ -36,6 +36,16 @@ function solveBoard(board){
         }
     }
     var solver = new Solver(intBoard);
+    
+    if(!solver.state.is_currently_valid()) {
+        alert('The sudoku you inputted has violations!');
+        newBoard = new Array(81).fill(".");
+        return newBoard;
+    }
+    else {
+        //alert("The sudoku you inputted doesn't have violations!");
+    }
+
     if (solver.dfs(0,0)) {
         alert('A solution exists! It is:');
         solvedBoard = solver.get_board();
@@ -116,6 +126,63 @@ class State{
                 !(this.rows[i].has(digit)) &&
                 !(this.cols[j].has(digit)) &&
                 !(this.boxes[Math.floor(i/3)][Math.floor(j/3)].has(digit)));
+    }
+
+    is_currently_valid() {
+        //alert("Checking validity");
+        // Returns true if board is currently valid
+
+        // Check rows don't have repeat
+        for (let i=0; i<9; i++) {
+            var currRow = new Set();
+            for (let j=0; j<9; j++) {
+                if (currRow.has(this.board[i][j])) {
+                    return false;
+                }
+                if (this.board[i][j] != ".") {
+                    currRow.add(this.board[i][j]);
+                }
+            }
+        }
+
+        //alert("rows valid");
+
+        // Check columns don't have repeat
+        for (let j=0; j<9; j++) {
+            var currCol = new Set();
+            for (let i=0; i<9; i++) {
+                if (currCol.has(this.board[i][j])) {
+                    return false;
+                }
+                if (this.board[i][j] != ".") {
+                    currCol.add(this.board[i][j]);
+                }
+            }
+        }
+
+
+        //alert("cols valid");
+
+        //  Check boxes don't have repeat
+        for (let i=0; i<3; i++) {
+            for (let j=0; j<3; j++) {
+                var currBox = new Set();
+                for (let a=0; a<9; a++) {
+                    var currDigit = this.board[i+Math.floor(a/3)][j+(a-3*Math.floor(a/3))];
+                    if (currBox.has(currDigit)) {
+                        return false;
+                    }
+                    if (currDigit != ".") {
+                        currBox.add(currDigit);
+                    }
+                }
+            }
+        }
+
+
+        //alert("boxes valid");
+
+        return true;
     }
 
     set_square(digit, i, j) {
