@@ -89,14 +89,15 @@
     }
 
     .grid-container {
-    flex: 1;
-    display: inline-grid;
+    display: grid;
     grid-template-columns: auto auto auto auto auto auto auto auto auto;
     background-color: #c8a2c8;
+    width: fit-content;
     padding: 5px;
     text-align: center;
     margin: auto;
     }
+
     .grid-item {
     background-color: rgba(255, 255, 255, 0.8);
     border: 1px solid rgba(0, 0, 0, 0.8);
@@ -106,11 +107,13 @@
     }   
 
     .grid-container2 {
-    display: inline-grid;
+    display: grid;
     grid-template-columns: 40px 40px 40px 40px 40px 40px 40px 40px 40px;
     background-color: #c8a2c8;
+    width: fit-content;
     padding: 5px;
     text-align: center;
+    margin: auto;
     }
 
     </style>
@@ -137,9 +140,6 @@
           <h3>Contact</h3>
           <p>jcortiz [at] stanford [dot] edu</p>
           <p><a href="../cv.pdf"><b>Resumé</b></a></p>
-    
-        <!--   <p><img src="mit.gif" alt="mit logo" /></p>
-          <p><img width="150px" src="orc.png" alt="orc logo" /></p> -->
       </div>
     
       <div class="main">
@@ -150,19 +150,6 @@
                 You can leave empty squares empty, or fill them out with a zero or a dot.
             </p>
 
-            <!-- <div  class="fieldset ">
-                <div class="awesomeHorFrame"></div> 
-                <div class="awesomeVert leftFrame "></div>
-                <div class="awesomeVert rightFrame "></div> 
-                <form class=" set" name="variables" method="post">
-                                        Matrix dimension:&nbsp;
-                        <select name="n" title="n" class="loading" disabled data-start='2' data-end='100'>
-                            <option value="2">2</option><option value="100">100</option>            </select>
-                                                            <div class='forSetButton'><input type='submit' name='submitButton' class='r-button-disabled loading' id='setMatrixButton' value='Set matrix' disabled title='Loading...' data-loading-title /></div>            </form>
-                <div class="awesomeHorFrame"></div>
-            </div> -->
-    
-            <div class="panelb">
                 <div class="grid-container">
                     <div class="grid-item"><input type="number" id="x1" name="quantity" min="1" max="9"></div>
                     <div class="grid-item"><input type="number" id="x2" name="quantity" min="1" max="9"></div>
@@ -255,7 +242,6 @@
                     <div class="grid-item"><input type="number" id="x80" name="quantity" min="1" max="9"></div>
                     <div class="grid-item"><input type="number" id="x81" name="quantity" min="1" max="9"></div>
                   </div>
-                </div>
 
                 <p> <button onclick="solveSudoku()">Click when ready!</button> </p>
 
