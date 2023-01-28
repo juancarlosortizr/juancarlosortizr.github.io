@@ -1,0 +1,37 @@
+/*
+typedef struct Square {
+    int row;
+    int col;
+    Square(int r, int c) : row(r), col(c) {}
+    friend std::ostream& operator<< (std::ostream& os, const Square& s);
+} Square;
+
+// Piece shapes
+enum Shape
+{
+    KING,
+    QUEEN,
+    ROOK,
+    BISHOP,
+    KNIGHT,
+    PAWN
+};
+
+// Piece colour
+enum Colour
+{
+    WHITE,
+    BLACK
+};
+
+// Wrapper around a piece
+class Piece {
+    Shape shape;
+    Square square;
+    Colour colour;
+public:
+    Piece(int row, int col, Shape s, Colour c) : square(row, col), piece(p), colour(c) {}
+    Piece(Square s, char p) : square(s), piece(p), colour(c) {}
+
+};
+*/
