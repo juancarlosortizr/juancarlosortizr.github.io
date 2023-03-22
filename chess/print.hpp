@@ -23,7 +23,8 @@ namespace BLACK {
     constexpr char PAWN = 'p';
 }
 
-const std::string HORIZONTAL_LINE = "---------------------------------";
+const std::string HORIZONTAL_LINE = "  ---------------------------------";
+const std::string PRINT_ROW_LETTERS = "    a   b   c   d   e   f   g   h  ";
 constexpr char VERTICAL_LINE = '|';
 constexpr char PLACEHOLDER = '.';
 
@@ -95,11 +96,12 @@ std::ostream& operator<<(std::ostream& os, const Board& b) {
     // Print the 8x8 board
     os << HORIZONTAL_LINE << '\n';
     for (int col=7; col>-1; col--) {
-        os << VERTICAL_LINE;
+        os << col+1 << ' ' << VERTICAL_LINE;
         for (int row=0; row<8; row++) os << ' ' << 
             board[row][col] << ' ' << VERTICAL_LINE;
         os << '\n' << HORIZONTAL_LINE << '\n';
     }
+    os << PRINT_ROW_LETTERS << '\n';
     return os;
 }
 

@@ -142,13 +142,28 @@ class State {
     // End square must be empty.
     // Figure motion must be valid
     bool meaningfulNormalMove(const Move& m) const {
+        std::cout << "Entering meaningful normal move" << std::endl; // TODO delete
         if (m.type != MOVE::NORMAL) return false;
 
         // Find own piece and enemy piece
         auto mine = figures.find(m.start.value());
-        if (mine == figures.end()) return false;
-        if (mine->second.colour != m.player) return false;
-        if (figures.find(m.end.value()) != figures.end()) return false;
+        if (mine == figures.end()) {
+            std::cout << "No piece found at "
+                      << m.start.value() << std::endl;
+            return false;
+        }
+        if (mine->second.colour != m.player) {
+            std::cout << "Piece found at "<< m.start.value()
+                      << " has wrong colour" << std::endl;
+            return false;
+        }
+        if (figures.find(m.end.value()) != figures.end()) {
+            std::cout << "Square " << m.end.value()
+                      << " not empty" << std::endl;
+            return false;
+        }
+
+        std::cout << "Normal move passes initial tests, checking board now for validMotion" << std::endl;  // TODO delete
 
         // Valid motion
         return b.validMotion(mine->second, m.start.value(), m.end.value());
@@ -240,6 +255,8 @@ public:
         // Legality en passant: enemy pawn just moved 2 squares
         // to appropriate square
         if (m.type == MOVE::ENPASSANT) {
+            // TODO delete
+            std::cout << enPassantSquare.value_or(Square{"a1"}) << std::endl;
             if (!enPassantSquare.has_value()) return false;
             return enPassantSquare.value() == m.end.value();
         }
@@ -267,24 +284,94 @@ public:
         if (!legal(m)) {
             throw std::invalid_argument{"Move not legal"};
         }
+        bool enablesEnPassant = false;
 
         // Castle
-        // TODO implement castling
-        if (m.type == MOVE::CASTLE) throw std::invalid_argument{
-            "Castling not yet implemented"
-        };
+        if (m.type == MOVE::CASTLE) {
+
+            // Change king in figures map and board
+            Square kingStart{(m.player == PLAYERTOMOVE::WHITE ? "e1" : "e8")};
+            Square kingEnd{((m.player == PLAYERTOMOVE::WHITE) ? 
+                ((m.side.value() == CASTLING::KINGSIDE) ? "g1" : "c1") :
+                ((m.side.value() == CASTLING::KINGSIDE) ? "g8" : "c8")    
+            )};
+            auto it = figures.find(kingStart);
+            figures.erase(it->first);
+            figures.insert({kingEnd, Figure{it->second.colour, true}});
+            b.teletransport(kingStart, kingEnd);
+
+            // Change rook in figures map
+            Square rookStart{((m.player == PLAYERTOMOVE::WHITE) ? 
+                ((m.side.value() == CASTLING::KINGSIDE) ? "h1" : "a1") :
+                ((m.side.value() == CASTLING::KINGSIDE) ? "h8" : "a8")    
+            )};
+            Square rookEnd{((m.player == PLAYERTOMOVE::WHITE) ? 
+                ((m.side.value() == CASTLING::KINGSIDE) ? "f1" : "d1") :
+                ((m.side.value() == CASTLING::KINGSIDE) ? "f8" : "d8")    
+            )};
+            auto ii = figures.find(rookStart);
+            figures.erase(ii->first);
+            figures.insert({rookEnd, Figure{Shape::ROOK, ii->second.colour}});
+            b.teletransport(rookStart, rookEnd);
+
+            // Forbid future castling for this player
+            if (m.player == PLAYERTOMOVE::WHITE) {
+                WKCastle = false;
+                WQCastle = false;
+            } else {
+                BKCastle = false;
+                BQCastle = false;
+            }
+        }
 
         // En Passant
-        // TODO implement en passant
-        if (m.type == MOVE::ENPASSANT) throw std::invalid_argument{
-            "EN Passant not yet implemented"
-        };
+        if (m.type == MOVE::ENPASSANT) {
+
+            // Find enemy pawn
+            Square enemy = (m.player == PLAYERTOMOVE::WHITE)
+                ? m.end.value().squareBehind() 
+                : m.end.value().squareInFront();
+
+            // Change figures map
+            auto it = figures.find(m.start.value());
+            auto itt = figures.find(enemy);
+            figures.erase(itt->first);
+            Figure fig = it->second;
+            figures.erase(it->first);
+            figures.insert({m.end.value(), fig});
+
+            // Change board
+            b.kill(enemy);
+            b.teletransport(m.start.value(), m.end.value());
+        }
 
         // Capture
-        // TODO implement capture
-        if (m.type == MOVE::CAPTURE) throw std::invalid_argument{
-            "Capturing not yet implemented"
-        };
+        if (m.type == MOVE::CAPTURE) {
+
+            // Change figures map
+            auto it = figures.find(m.start.value());
+            auto itt = figures.find(m.end.value());
+            figures.erase(itt->first);
+            Figure fig = it->second;
+            figures.erase(it->first);
+            figures.insert({m.end.value(), fig});
+
+            // Change board
+            b.kill(m.end.value());
+            b.teletransport(m.start.value(), m.end.value());
+
+            // If king/rook moved, disable castling
+            if ((fig.shape.value_or(Shape::BISHOP) == Shape::ROOK)
+                || (!fig.shape.has_value() && fig.king)) {
+                if (fig.colour == Owner::WHITE) {
+                    WKCastle = false;
+                    WQCastle = false;
+                } else {
+                    BKCastle = false;
+                    BQCastle = false;
+                }
+            }
+        }
 
         // Normal move
         if (m.type == MOVE::NORMAL) {
@@ -297,12 +384,41 @@ public:
 
             // Change board
             b.teletransport(m.start.value(), m.end.value());
+
+            // Check if move enables en passant
+            if ((!fig.shape.has_value()) && (!fig.king)
+                && (((m.start.value().squareInFront().squareInFront() == m.end.value()) && (m.player == PLAYERTOMOVE::WHITE))
+                || ((m.start.value().squareBehind().squareBehind() == m.end.value()) && (m.player == PLAYERTOMOVE::BLACK)))) {
+                enablesEnPassant = true;
+            }
+
+            // If king/rook moved, disable castling
+            if ((fig.shape.value_or(Shape::BISHOP) == Shape::ROOK)
+                || (!fig.shape.has_value() && fig.king)) {
+                if (fig.colour == Owner::WHITE) {
+                    WKCastle = false;
+                    WQCastle = false;
+                } else {
+                    BKCastle = false;
+                    BQCastle = false;
+                }
+            }
         }
 
+        // Update state
         whiteToMove = !whiteToMove;
+        if (!enablesEnPassant) enPassantSquare = std::optional<Square>{};
+        else {
+            enPassantSquare = Square{
+                (m.player == PLAYERTOMOVE::WHITE) ? m.start.value().squareInFront() : m.start.value().squareBehind()
+            };
+        }
+        halfmoves++;
+        if (m.player == PLAYERTOMOVE::BLACK) {fullmoves++;}
         return;
     }
 
+    // Get state's player to move
     PLAYERTOMOVE playerToMove() const {
         return whiteToMove ? PLAYERTOMOVE::WHITE : PLAYERTOMOVE::BLACK;
     }

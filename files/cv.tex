@@ -1,0 +1,137 @@
+%% start of file `template.tex'.
+%% Copyright 2006-2013 Xavier Danaux (xdanaux@gmail.com).
+%
+% This work may be distributed and/or modified under the
+% conditions of the LaTeX Project Public License version 1.3c,
+% available at http://www.latex-project.org/lppl/.
+
+
+\documentclass[11pt,a4paper]{moderncv}        % possible options include font size ('10pt', '11pt' and '12pt'), paper size ('a4paper', 'letterpaper', 'a5paper', 'legalpaper', 'executivepaper' and 'landscape') and font family ('sans' and 'roman')
+
+% moderncv themes
+\moderncvstyle{classic}                             % style options are 'casual' (default), 'classic', 'oldstyle' and 'banking'
+\moderncvcolor{blue}                               % color options 'blue' (default), 'orange', 'green', 'red', 'purple', 'grey' and 'black'
+%\renewcommand{\familydefault}{\sfdefault}         % to set the default font; use '\sfdefault' for the default sans serif font, '\rmdefault' for the default roman one, or any tex font name
+%\nopagenumbers{}                                  % uncomment to suppress automatic page numbering for CVs longer than one page
+
+% character encoding
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage[utf8]{inputenc}                       % if you are not using xelatex ou lualatex, replace by the encoding you are using
+%\usepackage{CJKutf8}                              % if you need to use CJK to typeset your resume in Chinese, Japanese or Korean
+
+% adjust the page margins
+\usepackage[scale=0.95, margin=.47in]{geometry}
+\setlength{\hintscolumnwidth}{2.5 cm}                % if you want to change the width of the column with the dates
+%\setlength{\makecvtitlenamewidth}{10cm}           % for the 'classic' style, if you want to force the width allocated to your name and avoid line breaks. be careful though, the length is normally calculated to avoid any overlap with your personal info; use this at your own typographical risks...
+
+% personal data
+\name{{\LARGE $\mathbf{Juan}$}}{{\LARGE $\mathbf{Carlos}\;\mathbf{}\;\mathbf{Ortiz}$}{\Large \newline }}
+% optional, remove / comment the line if not wanted
+\address{New York City, NY}{United States}% optional, remove / comment the line if not wanted; the "postcode city" and and "country" arguments can be omitted or provided empty
+
+% optional, remove / comment the line if not wanted
+\email{jcortiz [at] stanford [dot] edu}
+\homepage{juancarlosortizr.github.io}% optional, remove / comment the line if not wanted
+%\photo[42pt][0.4pt]{PhotoAdan}                       % optional, remove / comment the line if not wanted; '64pt' is the height the picture must be resized to, 0.4pt is the thickness of the frame around it (put it to 0pt for no frame) and 'picture' is the name of the picture file
+
+% to show numerical labels in the bibliography (default is to show no labels); only useful if you make citations in your resume
+%\makeatletter
+%\renewcommand*{\bibliographyitemlabel}{\@biblabel{\arabic{enumiv}}}
+%\makeatother
+%\renewcommand*{\bibliographyitemlabel}{[\arabic{enumiv}]}% CONSIDER REPLACING THE ABOVE BY THIS
+
+% bibliography with mutiple entries
+%\usepackage{multibib}
+%\newcites{book,misc}{{Books},{Others}}
+%----------------------------------------------------------------------------------
+%            content
+%----------------------------------------------------------------------------------
+\begin{document}
+%\begin{CJK*}{UTF8}{gbsn}                          % to typeset your resume in Chinese using CJK
+%-----       resume       ---------------------------------------------------------
+\makecvtitle
+\vspace{-13mm}
+%%%%% EDUCATION %%%%
+\section{Education}
+\cventry{{\tiny September 2019 — April 2023}}{Stanford University}{Master of Science in Mathematics}{Stanford}{CA}{GPA: \emph{4.0/4.0}. Area of Interest: Theoretical Computer Science. Graduation Date: April 2023.}
+
+\cventry{}{Selected CS Courses}{}{}{}{
+Advanced Software Development for Scientists and Engineers (CME 211, 212), Machine Learning (CS 229), Artificial Intelligence (CS 221), Data Structures (CS 166), Principles of Computer Systems (CS 110).}
+\cventry{}{Selected Math Courses}{}{}{}{
+Algebraic Geometry (MATH 216A, 216B), Symplectic Topology (MATH 257A).}
+
+\cventry{{\tiny September 2015 — June 2019}}{Massachusetts Institute of Technology}{Bachelor of Science in Mathematics}{Cambridge}{MA}{GPA: \emph{4.8/5.0}. Graduation Date: June 2019.}
+
+%%%% JOBS %%%%
+\section{Work Experience}
+\cventry{{\tiny April 2023 — Present}}{D.E. Shaw \& Co. — Quantitative Analyst and Software Developer}{New York City}{NY}{}{}
+\cventry{{\tiny September 2022 — December 2022}}{Google — Software Engineer Intern}{Sunnyvale}{CA}{}{\begin{itemize}
+\item{Worked in the Core Compute Analytics team modeling risk management for Cloud (GCE) resources (memory and cores) via Lumos simuations.}
+\item{Authored new Borg simulation modes in C++ and processed the outputted data with SQL.}
+\end{itemize}}
+\cventry{{\tiny June 2022 — December 2022}}{Instagram — Software Engineer, Machine Learning Intern}{Menlo Park}{CA}{}{\begin{itemize}
+\item{Worked with state-of-the-art neural network architectures to implement loss terms, labels, and weights}
+\item{Trained multi-task multi-label ML models with Bayesian logic to predict downstream labels.}
+\item{Authored pipelines and analyzed the resulting datasets to detect behavioural patterns.}
+\item{Modified ranking systems to incorporate new value model formulae.}
+\item{Developed new model architecture classes in PyTorch.}
+\end{itemize}}
+\cventry{{\tiny March 2022 — June 2022}}{Verkada — Full Stack Software Engineer Intern}{San Mateo}{CA}{}{\begin{itemize}
+\item{Worked with the AWS Serverless and Lambdas in conjunction with Google Cloud Functions to run scripts on specific triggers.}
+\item{Built an email server hosted in AWS VMs with elastic load balancers configured to allow and prohibit specific traffic.}
+\end{itemize}}
+\cventry{{\tiny June 2021 — August 2021}}{Jane Street Capital — Quantitative Trading Intern}{New York City}{NY}{}{\begin{itemize}
+\item{Used SQL and Python (Pandas) to extract and interpret financial market data and build models which predict volumes of different types of securities based on market events in related securities.}
+\item{Practiced high-pressure decision-making and communication skills in 40+ hours of simulated trading sessions.}
+\end{itemize}}
+\cventry{{\tiny September 2019 — March 2022}}{Stanford University — Teaching Assistant}{Stanford}{CA}{}{\begin{itemize}
+\item{Course assistant and teaching assistant in several mathematics courses.}
+\end{itemize}}
+\end{itemize}}
+
+%%%% AWARDS %%%%
+\section{Selected Honors}
+\cventry{{\tiny Summer 2015}}{2015 International Mathematics Olympiad (IMO)}{Chiang Mai}{Thailand}{}{Gold Medal. Third ever Mexico team member to achieve this recognition.}
+\cventry{{\tiny Summer 2014}}{2014 International Mathematics Olympiad (IMO)}{Cape Town}{South Africa}{}{Silver Medal.}
+\cventry{{\tiny Summer 2013}}{2013 International Mathematics Olympiad (IMO)}{Santa Marta}{Colombia}{}{Silver Medal.}
+
+%%%% SKILLS %%%%
+\section{Technologies}
+\cvitem{{\tiny Languages}}{Proficient: Python, C/C++, SQL. Intermediate: Lua, GCL. Beginner: JavaScript, OCaml}
+\cvitem{{\tiny Other}}{PyTorch, Command Line, Git, \LaTeX, Mercurial, Cron, Pandas}
+
+
+%\cventry{{\tiny Summer 2017}}{SPUR program at %MIT}{Cambridge}{MA}{}{$\mathbf{Mentor}$: \emph{Jackson Hance.}
+%\begin{itemize}
+%\item{Conducted research in algebraic topology and geometric topology. The %final paper can be found at: %\url{https://math.mit.edu/research/undergraduate/spur/documents/2017Ortiz.%pdf}.}
+%\end{itemize}}
+%\end{itemize}}
+
+
+%\section{References}
+%\begin{cvcolumns}
+%  \cvcolumn{Category 1}{\begin{itemize}\item Person 1\item Person 2\item Person %3\end{itemize}}
+%  \cvcolumn{Category 2}{Amongst others:\begin{itemize}\item Person 1, and\item Person 2\end{itemize}(more upon request)}
+%  \cvcolumn[0.5]{All the rest \& some more}{\textit{That} person, and \textbf{those} also (all available upon request).}
+%\end{cvcolumns}
+
+% Publications from a BibTeX file without multibib
+%  for numerical labels: \renewcommand{\bibliographyitemlabel}{\@biblabel{\arabic{enumiv}}}% CONSIDER MERGING WITH PREAMBLE PART
+%  to redefine the heading string ("Publications"): \renewcommand{\refname}{Articles}
+\nocite{*}
+\bibliographystyle{plain}
+\bibliography{publications}                        % 'publications' is the name of a BibTeX file
+
+% Publications from a BibTeX file using the multibib package
+%\section{Publications}
+%\nocitebook{book1,book2}
+%\bibliographystylebook{plain}
+%\bibliographybook{publications}                   % 'publications' is the name of a BibTeX file
+%\nocitemisc{misc1,misc2,misc3}
+%\bibliographystylemisc{plain}
+%\bibliographymisc{publications}                   % 'publications' is the name of a BibTeX file
+
+
+
+\end{document}

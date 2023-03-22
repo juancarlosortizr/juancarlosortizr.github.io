@@ -9,6 +9,7 @@
 typedef struct Square {
 private:
     char encoder;
+    bool valid;
 
     // Translate char to and from (row,rank)
     void encode(char row, int rank) {
@@ -20,10 +21,13 @@ private:
 
 public:
     // Interpret 'a', 1
-    Square(char row, int rank) {encode(row,rank);}
+    Square(char row, int rank) : valid{true} {encode(row,rank);}
 
     // Interpret "a1"
     Square(std::string square) : Square(square.at(0), atoi(&square.at(1))) {}
+
+    // Create invalid squares
+    Square() : Square("a1") {valid=false;}
 
     // Get row and rank
     char row() const {return decode().first;}
@@ -33,8 +37,9 @@ public:
     friend std::ostream& operator<<(std::ostream& os, const Square& b);
 
     // Comparison (to e.g. sort a vector)
+    // TODO worry about operator< with invalid squares?
     bool operator==(const Square& s) const {
-        return encoder == s.encoder;
+        return encoder == s.encoder && valid == s.valid;
     }
     bool operator<(const Square& s) const {
         return (row() < s.row()) || (row() == s.row() && rank() < s.rank());
@@ -56,17 +61,13 @@ public:
 
     // Return square in front. Throws error if this square is on last rank
     Square squareInFront() const {
-        if (rank()==8) throw std::invalid_argument{
-            "Square on last rank has no square in front"
-        };
+        if (rank()==8) return Square{};
         return {row(), rank()+1};
     }
 
     // Return square behind. Throws error if this square is on first rank
     Square squareBehind() const {
-        if (rank()==1) throw std::invalid_argument{
-            "Square on first rank has no square behind"
-        };
+        if (rank()==1) return Square{};
         return {row(), rank()-1};
     }
 

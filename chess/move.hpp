@@ -10,6 +10,8 @@ enum class MOVE {
     ENPASSANT,
     CAPTURE,
     NORMAL
+    // TODO promotions, checks, checkmate, stalemate
+    // TODO outlaw moves that leave you in check, or castling through/into/from check, or stuffs like this
 };
 
 enum class PLAYERTOMOVE {
@@ -56,7 +58,7 @@ public:
     }
 
     // Constructor for a non-castling move
-    Move (MOVE t, PLAYERTOMOVE p, Square s, Square e) :
+    Move(MOVE t, PLAYERTOMOVE p, Square s, Square e) :
         type{t}, player{p}, side{}, start{s}, end{e} {
         if (t==MOVE::CASTLE) throw std::invalid_argument(
             "Non-castling move must be instantiated with MOVE::CAPTURE, \

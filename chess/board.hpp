@@ -12,6 +12,15 @@
 #ifndef CHESS_BOARD_H
 #define CHESS_BOARD_H
 
+// Translate between Owner and PlayerToMove
+// TODO necessary?
+Owner toOwner(const PLAYERTOMOVE& ptm) {
+    return (ptm == PLAYERTOMOVE::WHITE) ? Owner::WHITE : Owner::BLACK;
+}
+PLAYERTOMOVE toPTM(const Owner& o) {
+    return (o == Owner::WHITE) ? PLAYERTOMOVE::WHITE : PLAYERTOMOVE::BLACK;
+}
+
 // A single 8x8 board with no game history memory or state
 class Board {
     // White pieces
@@ -77,12 +86,14 @@ class Board {
     // Checks squares are horizontally/vertically/diagonally adjacent,
     // without verifying for any checks: ONLY verifies the motion makes sense
     bool validKingMotion(Square start, Square end) const {
+        std::cout << "Board: Can king move from " << start << " to " << end << std::endl; // TODO delete
+        int rowDelta = start.row() - end.row();
+        int rankDelta = start.rank() - end.rank();
+        std::cout << "Row delta " << rowDelta << ", rank delta " << rankDelta << std::endl; // TODO delete
         return (
-            start != end
-            && (-1 <= (start.row()-end.row()))
-            && ((start.row()-end.row()) <= 1)
-            && (-1 <= (start.rank()-end.rank()))
-            && ((start.rank()-end.rank()) <= 1)
+            (start != end)
+            && (-1 <= rowDelta) && (rowDelta <= 1)
+            && (-1 <= rankDelta) && (rankDelta <= 1)
         );
     }
 
@@ -90,45 +101,10 @@ class Board {
     // with no pieces in-between to jump over.
     // TODO: modularize each direction, to reuse in Rook and Bishop method?
     bool validQueenMotion(Square start, Square end) const {
+        std::cout << "Board? Can queen move from " << start << " to " << end << std::endl; // TODO delete
         if (start==end) return false;
-
-        // Horizontal
-        if (start.rank() == end.rank()) {
-            for (char row = std::min(start.row(), end.row())+1;
-                row < std::max(start.row(), end.row()); 
-                row++) {
-                if (colourPresent(Square{row, start.rank()}).has_value()) {
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        // Vertical
-        if (start.row() == end.row()) {
-            for (int rank = std::min(start.rank(), end.rank()+1);
-                rank < std::max(start.rank(), end.rank()); 
-                rank++) {
-                if (colourPresent(Square{start.row(), rank}).has_value()) {
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        // Diagonal
-        if (start.row() - end.row() == start.rank() - end.rank()) {
-            for (int delta = 1;
-                delta < std::abs(start.rank() - end.rank()); delta++) {
-                if (colourPresent(Square{
-                    static_cast<char>(std::min(start.row(), end.row()) +delta),
-                    std::min(start.rank(), end.rank()) + delta
-                }).has_value()) return false;
-            }
-            return true;
-        }
-
-        return false;
+        if (validRookMotion(start, end)) return true;
+        return validBishopMotion(start, end);
     }
 
     // Checks squares are opposite corners of some 2x3 rectangle
@@ -146,13 +122,26 @@ class Board {
     bool validBishopMotion(Square start, Square end) const {
         if (start==end) return false;
 
-        if (start.row() - end.row() == start.rank() - end.rank()) {
-            for (int delta = 1;
+        // Diagonal
+        if (std::abs(start.row() - end.row())
+            == std::abs(start.rank() - end.rank())) {
+            std::cout << "Analyzing queen diagonal motion" << std::endl; // TODO delete
+            std::vector<Square> squaresToCheck;
+            bool northEast = (start.row() - end.row())
+                == (start.rank() - end.rank());
+
+            // Collect all squares on the diagonal
+            for (int delta=1;
                 delta < std::abs(start.rank() - end.rank()); delta++) {
-                if (colourPresent(Square{
-                    static_cast<char>(std::min(start.row(), end.row()) +delta),
-                    std::min(start.rank(), end.rank()) + delta
-                }).has_value()) return false;
+                squaresToCheck.push_back({
+                    static_cast<char>(std::min(start.row(), end.row()) + delta),
+                    northEast ? std::min(start.rank(), end.rank()) + delta :
+                        std::max(start.rank(), end.rank()) - delta
+                });
+            }
+
+            for (Square s : squaresToCheck) {
+                if (colourPresent(Square{s}).has_value()) return false;
             }
             return true;
         }
@@ -179,7 +168,7 @@ class Board {
 
         // Vertical
         if (start.row() == end.row()) {
-            for (int rank = std::min(start.rank(), end.rank()+1);
+            for (int rank = std::min(start.rank(), end.rank())+1;
                 rank < std::max(start.rank(), end.rank()); 
                 rank++) {
                 if (colourPresent(Square{start.row(), rank}).has_value()) {
@@ -262,6 +251,35 @@ class Board {
         }
 
         throw std::invalid_argument{"Cannot teletransport"};
+    }
+
+    // Assume a non-king figure exists on the square, then kill it
+    // If a king is there, or if the square is empty, this is undefined
+    void kill(Square s) {
+
+        // Kill pawns
+        auto pawn = getPawn(s);
+        if (pawn.has_value()) {
+            if (pawn.value().second == Owner::WHITE) {
+                WPawns.erase(WPawns.begin() + pawn.value().first);
+            } else {
+                BPawns.erase(BPawns.begin() + pawn.value().first);
+            }
+            return;
+        }
+
+        // Kill piece
+        auto piece = getPiece(s);
+        if (piece.has_value()) {
+            if (piece.value().second == Owner::WHITE) {
+                WPieces.erase(WPieces.begin() + piece.value().first);
+            } else {
+                BPieces.erase(BPieces.begin() + piece.value().first);
+            }
+            return;
+        }
+
+        throw std::invalid_argument{"Cannot Kill"};
     }
     
 public:
@@ -370,23 +388,28 @@ public:
                     return false;  // never executes
             }
         }
-        return (f.king ? : validKingMotion(start, end), 
+        std::cout << "Checking valid motion of king/pawn. King? " << f.king << std::endl; // TODO delete
+        return (f.king ? validKingMotion(start, end) :
             validPawnMotion(f.colour, start, end));
     }
 
     // Interpret a meaningful (but not necessarily legal)
     // move from algebraic notation
+    // Logic fleshed out in algebraic_notation.hpp
     std::optional<Move> readAlgebraicNotation(
         std::string alg,
         PLAYERTOMOVE ptm
-    ) {
-        return {};
+    ) const { 
+        // TODO Always use the same alg-not instance for this?
+        return readAlgNot(this, alg, ptm);
     }
 
     // Enable state to access raw board info
     friend class State;
     // Enable printing a board state to the terminal
     friend class BoardToArray;
+    // Enable reading algebraic notation
+    friend std::optional<Move> readAlgNot(const Board* b_, std::string alg_, PLAYERTOMOVE ptm_);
 };
 
 // Print board info to an 8x8 char array
@@ -394,5 +417,8 @@ class BoardToArray {
 public:
     void print(const Board& b, char board[][8]);
 };
+
+// Convert alg-not to moves, and vice-versa
+std::optional<Move> readAlgNot(const Board* b, std::string alg, PLAYERTOMOVE ptm);
 
 #endif  // CHESS_BOARD_H

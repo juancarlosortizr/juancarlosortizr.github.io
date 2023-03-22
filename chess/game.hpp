@@ -1,8 +1,10 @@
 #include <cstring>
 #include <iostream>
 #include <sstream>
+#include <stdexcept>
 #include <unordered_set>
 #include <vector>
+#include "algebraic_notation.hpp"
 #include "fen.hpp"
 #include "move.hpp"
 #include "state.hpp"
@@ -114,18 +116,34 @@ public:
                     << currPos.playerToMove() << std::endl;
             std::cin >> command;
             if (command == QUIT) break;
-            auto move = readRawNotation(command);
-            if (!move.has_value() || !currPos.meaningful(move.value())) {
-                std::cout << "That move is meaningless. Try again." << std::endl;
-                continue;
+            Move* finalMove;
+
+            // Read algebraic notation, e.g. "Nxe4"
+            auto m = currPos.b.readAlgebraicNotation(command,
+                currPos.playerToMove());
+            if (m.has_value()) {
+                // TODO Qxa1 checked twice for the queen motion
+                finalMove = new Move {m.value()};
+            } else {
+
+                // Read raw notation, e.g. "CAPTURE,WHITE,d1,a4"
+                auto move = readRawNotation(command);
+                if (!move.has_value()) {
+                    std::cout << "That move is meaningless. Try again." << std::endl;
+                    continue;
+                }
+                finalMove = new Move {move.value()};
+
             }
-            if (!currPos.legal(move.value())) {
-                std::cout << "That moves is illegal. Try again" << std::endl;
-                continue;
+
+            // Perform the given move
+            try {currPos.move(*finalMove);}
+            catch (std::invalid_argument stdia) {
+                std::cout << "Can't move there. ISSUE: "
+                          << stdia.what() << std::endl;
             }
-            std::cout << "That move is legal. Proceeding to make it" << std::endl;
-            currPos.move(move.value());
-            allMoves.push_back(move.value());
+            allMoves.push_back(*finalMove);
+            delete finalMove;
             std::cout << currPos << std::endl;
         }
 
