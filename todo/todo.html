@@ -98,18 +98,18 @@ body {
 
 <!-- Navigation Bar -->
 <div class="navbar">
-  <a href="index.html">Main</a>
-  <a href="links.html">Links</a>
-  <a href="projects.html">Coding Projects</a>
+  <a href="../index.html">Main</a>
+  <a href="../links.html">Links</a>
+  <a href="../projects.html">Coding Projects</a>
 </div>
 
 <!-- The flexible grid (content) -->
 <div class="row">
   <div class="side">
-      <img class="fakeimg"   src="files/me.jpg" alt="me" />
+      <img class="fakeimg"   src="../files/me.jpg" alt="me" />
       <h3>Contact</h3>
       <p>jcortiz [at] stanford [dot] edu</p>
-      <p><a href="files/cv.pdf"><b>Resumé</b></a></p>
+      <p><a href="../files/cv.pdf"><b>Resumé</b></a></p>
 
     <!--   <p><img src="mit.gif" alt="mit logo" /></p>
       <p><img width="150px" src="orc.png" alt="orc logo" /></p> -->
@@ -117,15 +117,16 @@ body {
 
   <div class="main">
 
-    <h2 id="sudoku">Sudoku Solver</h2>
-        <p><a href="sudoku/sudoku.html">Here</a> is a simple sudoku solver I built from scratch. Input a solvable sudoku, and it'll spit out a solution! If it's unsolvable, it'll let you know. This is a toy project that uses only a basic DFS — nothing too complicated! I mainly wanted to do it to learn JavaScript. </p> 
+      <h1>Your To-Do Tasks</h1>
+      <ul id="todo-list"></ul>
 
+      <form id="add-task">
+        <label for="new-task">Add a new task:</label>
+        <input type="text" id="new-task-name" name="new-task-name" required>
+        <button type="submit">Create task!</button>
+      </form>
 
-    <h2 id="sudoku">Chess Player (in progress)</h2>
-        <p><a href="https://github.com/juancarlosortizr/juancarlosortizr.github.io/tree/master/chess">Here</a> is (the source code for) a simple chess player. You can comple it using the Makefile. It has no GUI, so unfortunately, for now, it's limited to ASCII art to represent the board. You can play against yourself or the bot, but beware, the bot is currently not very bright. It's limited to a simple BFS and evaluates a position according to material value; it doesn't have a tactical brain.
-
-    <h2 id="todo">To-Do List</h2>
-        <p>I'm a big fan of to-do lists when I have lots of stuff on my mind and I just wanna get chores done. Here's a very simple interactive <a href="todo/todo.html">to-do list</a>. You can add new tasks, mark a task as done (but leave it there in case you wish to revisit it), permute the tasks, or eliminate a task (which, unlike marking it as done, completely erases it from the list).</p>
+      <script src="todo.js"></script>
 
   </div>
 
