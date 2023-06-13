@@ -1,0 +1,1 @@
+cmd_Release/chess.node := c++ -bundle -undefined dynamic_lookup -Wl,-search_paths_first -mmacosx-version-min=10.15 -arch arm64 -L./Release -stdlib=libc++  -o Release/chess.node Release/obj.target/chess/src/main.o 

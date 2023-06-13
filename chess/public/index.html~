@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Play Chess!</title>
+</head>
+<body>
+  <input type="text" id="userMove" placeholder="Enter your move:">
+  <button onclick="playMove()">Submit</button>
+  <p id="output"></p>
+
+  <script src="index.js"></script>
+</body>
+</html>
