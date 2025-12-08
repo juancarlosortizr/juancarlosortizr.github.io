@@ -5,6 +5,8 @@
 #include <set>
 #include <utility>
 #include <algorithm>
+#include <ostream>
+#include <string>
 #include "piece.h"
 #include "en_passant.h"
 #include "castling.h"
@@ -46,7 +48,7 @@ const int knight_offs[8][2] = {
 const int bishop_dirs[4][2] = {{1,1},{1,-1},{-1,1},{-1,-1}};
 const int rook_dirs[4][2] = {{1,0},{-1,0},{0,1},{0,-1}};
 
-const int FIFTY_MOVE_RULE_LIMIT = 100;
+const int FIFTY_MOVE_RULE_LIMIT = 4;
 
 const PieceKind startingBackRank[8] = {
     PieceKind::Rook,
@@ -199,6 +201,22 @@ public:
     void set_castling(CastlingRights cr) { castling = cr; }
     CastlingRights get_castling_rights() const { return castling; }
 
+    friend std::ostream& operator<<(std::ostream& os, const Board& board) {
+        os << "Pieces:";
+        if (board.pieces.empty()) {
+            os << " none";
+        } else {
+            for (const auto& piece : board.pieces) {
+                os << ' ' << piece;
+            }
+        }
+        os << "\nTurn: " << (board.white_to_move ? "White" : "Black");
+        os << "\nEn Passant: " << board.en_passant.to_string();
+        os << "\nCastling: " << board.castling;
+        os << "\nHalfmove Clock: " << board.halfmove_clock;
+        return os;
+    }
+
     // Is castling a valid move?
     bool can_castle(const bool white, const bool kingside) const {
         const bool rights_ok = white ?
@@ -233,7 +251,7 @@ public:
     }
     // Helper: get the "midpoint" of castling. If it is attacked, castling is valid but not legal
     // Does NOT perform any verifications regarding castling rights, the rook actually being there, etc
-    std::pair<int,int> _midpoint_castling(const bool white, const bool kingside) const {
+    inline std::pair<int,int> _midpoint_castling(const bool white, const bool kingside) const {
         const int step = kingside ? 1 : -1;
         const int kingX = 4;
         const int kingY = white ? 0 : 7;  // same as rook Y

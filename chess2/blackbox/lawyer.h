@@ -56,7 +56,9 @@ public:
 
 private:
 
+    // If true, we can perform illegal (but valid) moves. Mostly used for checking legality.
     bool in_simulation = false;
+
     Lawyer() = default;                    // private constructor
     ~Lawyer() = default;           // private destructor
     Lawyer(const Lawyer&) = delete;      // disable copy
@@ -234,6 +236,9 @@ public:
         return (player_to_move_in_check ? GameStatus::Checkmate : GameStatus::Stalemate);
     }
 
+    /* 
+    * TODO Move to DFS
+    */
     bool has_mate_in_one(const Board& board) {
         const bool white_to_move = board.is_white_to_move();
         const int piece_count = board.get_piece_count();
@@ -244,9 +249,10 @@ public:
             if (!legal(board, candidate)) {
                 return false;
             }
-            Board simulated(board);
-            perform_move(simulated, candidate);
-            return game_status(simulated, std::vector<Board>{}) == GameStatus::Checkmate;
+            // The following is NOT a simulation, since it still requires legal moves.
+            Board hypoth(board);
+            perform_move(hypoth, candidate);
+            return game_status(hypoth, std::vector<Board>{}) == GameStatus::Checkmate;
         };
         for (int idx = 0; idx < piece_count; ++idx) {
             const Piece& mover = board.get_piece(idx);

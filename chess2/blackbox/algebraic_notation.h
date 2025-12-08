@@ -7,6 +7,7 @@
 #include <utility>
 #include "lawyer.h"
 #include "square_utils.h"
+#include "move.h"
 
 namespace algebraic_notation_detail {
 
