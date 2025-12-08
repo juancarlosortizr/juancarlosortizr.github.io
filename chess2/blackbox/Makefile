@@ -4,9 +4,11 @@ CXXSTD ?= -std=c++17
 CXXFLAGS ?= $(CXXSTD) -g $(OPTIMIZE)
 INCLUDES = -I/opt/homebrew/include
 
+# Note these are for Mac. You'll need to change them for Linux
 GUI_LIBS = -L/opt/homebrew/lib -lraylib \
            -framework OpenGL -framework Cocoa \
            -framework IOKit -framework CoreVideo
+
 CMDLINE_LIBS = -L/opt/homebrew/lib
 
 GUI_SOURCES = chess_gui.cpp $(COMMON_SOURCES)
