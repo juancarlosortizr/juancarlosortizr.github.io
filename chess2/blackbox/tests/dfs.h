@@ -4,6 +4,7 @@
 #include <cassert>
 #include <string>
 #include <vector>
+#include <set>
 #include "../board.h"
 #include "../game.h"
 #include "../lawyer.h"
@@ -29,71 +30,101 @@ inline Move make_move(Game& game, const std::string& notation) {
     return move;
 }
 
-inline void dfs_e4_e5_maxdepth1_material_oracle_test() {
+inline void run_scenario(const std::string& test_name,
+                         const std::vector<std::string>& moves,
+                         const std::set<std::string>& expected_best,
+                         Oracle oracle,
+                         int max_depth) {
     Game game;
-    make_move(game, "e4");
-    make_move(game, "d5");
-
-    DFS::MAX_DEPTH = 1;
-    DFS dfs(make_material_oracle(), true);
-    const Move best = dfs.explore(game.board());
-    const std::string notation = to_algebraic_notation(best, game.board());
-    if (notation.rfind("exd5", 0) != 0) {
-        throw std::runtime_error("Expected exd5, got " + notation);
+    for (const auto& san : moves) {
+        make_move(game, san);
     }
+
+    int orig_max_depth = DFS::MAX_DEPTH;
+    DFS::MAX_DEPTH = max_depth;
+    const bool white_to_move = game.board().is_white_to_move();
+    DFS dfs(std::move(oracle), white_to_move);
+    const Move best = dfs.explore(game.board(), game.get_halfmove_clock());
+    const std::string notation = to_algebraic_notation(best, game.board());
+    if (expected_best.find(notation) == expected_best.end()) {
+        std::string expected_best_str = "";
+        for (auto eb : expected_best) {
+            expected_best_str = expected_best_str + eb + ";";
+        }
+        throw std::runtime_error("[" + test_name + "] Expected " + expected_best_str + " but got " + notation);
+    }
+    DFS::MAX_DEPTH = orig_max_depth;
+}
+
+inline void dfs_e4_e5_material_oracle_test() {
+    run_scenario("dfs_e4_e5_material_depth",
+                {"e4", "d5"},
+                {"exd5"},
+                make_material_oracle(),
+                1);
+}
+
+inline void dfs_bishop_check_test() {
+    run_scenario("dfs_e4_e5_material_depth",
+                {"e4", "d5", "Be2", "c5"},
+                {"Bb5+"},
+                make_material_oracle(),
+                3);
 }
 
 inline void dfs_fools_mate_test() {
-    Game game;
-    make_move(game, "f3");
-    make_move(game, "e5");
-    make_move(game, "g4");
-
-    DFS::MAX_DEPTH = 1;
-    Oracle o1{};
-    Oracle o2 = make_material_oracle();
-    while (DFS::MAX_DEPTH <= 3) {
-        for (Oracle* o : { &o1, &o2 }) {
-            DFS dfs{*o, false};
-            const Move best = dfs.explore(game.board());
-            const std::string notation = to_algebraic_notation(best, game.board());
-            if (notation.rfind("Qh4# 0-1", 0) != 0) {
-                throw std::runtime_error("Expected Qh4# 0-1, got " + notation);
-            }
-        }
-        DFS::MAX_DEPTH++;
+    const std::vector<std::string> moves = {"f3", "e5", "g4"};
+    Oracle basic_oracle{};
+    Oracle material = make_material_oracle();
+    for (int depth = 1; depth <= 4; ++depth) {
+        run_scenario("dfs_fools_mate_basic_depth_" + std::to_string(depth),
+                     moves,
+                     {"Qh4# 0-1"},
+                     basic_oracle,
+                     depth);
+        run_scenario("dfs_fools_mate_material_depth_" + std::to_string(depth),
+                     moves,
+                     {"Qh4# 0-1"},
+                     material,
+                     depth);
     }
 }
 
 inline void dfs_scholars_mate_test() {
-    Game game;
-    make_move(game, "e4");
-    make_move(game, "e5");
-    make_move(game, "Bc4");
-    make_move(game, "a6");
-    make_move(game, "Qf3");
-    make_move(game, "Nc6");
+    const std::vector<std::string> moves = {"e4", "e5", "Bc4", "a6", "Qf3", "Nc6"};
+    Oracle basic_oracle{};
+    Oracle material = make_material_oracle();
+    for (int depth = 1; depth <= 4; ++depth) {
+        run_scenario("dfs_scholars_mate_basic_depth_" + std::to_string(depth),
+                     moves,
+                     {"Qxf7# 1-0"},
+                     basic_oracle,
+                     depth);
+        run_scenario("dfs_scholars_mate_material_depth_" + std::to_string(depth),
+                     moves,
+                     {"Qxf7# 1-0"},
+                     material,
+                     depth);
+    }
+}
 
-    DFS::MAX_DEPTH = 1;
-    Oracle o1{};
-    Oracle o2 = make_material_oracle();
-    while (DFS::MAX_DEPTH <= 3) {
-        for (Oracle* o : { &o1, &o2 }) {
-            DFS dfs{*o, true};
-            const Move best = dfs.explore(game.board());
-            const std::string notation = to_algebraic_notation(best, game.board());
-            if (notation.rfind("Qxf7# 1-0", 0) != 0) {
-                throw std::runtime_error("Expected Qxf6# 0-1, got " + notation);
-            }
-        }
-        DFS::MAX_DEPTH++;
+inline void dfs_lose_bishop_test() {
+    const std::vector<std::string> moves = {"e4", "e5", "Ba6"};
+    Oracle material = make_material_oracle();
+    for (int depth = 1; depth <= 4; ++depth) {
+        run_scenario("dfs_lose_bishop_material_depth_" + std::to_string(depth),
+                     moves,
+                     {"Nxa6", "bxa6"},
+                     material,
+                     depth);
     }
 }
 
 inline void run_all() {
-    dfs_e4_e5_maxdepth1_material_oracle_test();
+    dfs_e4_e5_material_oracle_test();
     dfs_fools_mate_test();
     dfs_scholars_mate_test();
+    dfs_lose_bishop_test();
 }
 
 } // namespace tests

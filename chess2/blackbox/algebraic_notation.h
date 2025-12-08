@@ -122,12 +122,6 @@ inline Board board_after_move(const Board& board, const Move& move) {
 
     result.set_castling(cr);
 
-    if (move.is_attempted_capture_or_pawn_move()) {
-        result.reset_halfmove_clock();
-    } else {
-        result.increase_halfmove_clock();
-    }
-
     result.toggle_white_to_move();
     return result;
 }

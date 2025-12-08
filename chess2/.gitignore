@@ -1,3 +1,4 @@
 blackbox/cmdline_chess
 blackbox/gui
 blackbox/*.dSYM
+blackbox/jco

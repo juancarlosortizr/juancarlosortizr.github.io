@@ -736,7 +736,7 @@ int main(int argc, char** argv) {
         if (status != GameStatus::Ongoing) {
             trigger_game_over_popup();
         }
-        const bool mate_in_one_available = Lawyer::instance().has_mate_in_one(game.board());
+        const bool mate_in_one_available = Lawyer::instance().has_mate_in_one(game.board(), game.get_halfmove_clock());
         if (mate_in_one_available) {
             play_mate_in_one_sound();
         }
@@ -1009,7 +1009,7 @@ int main(int argc, char** argv) {
             }
         }
 
-        const int halfmoveClock = game.board().get_halfmove_clock();
+        const int halfmoveClock = game.get_halfmove_clock();
         const double halfmoveDisplay = halfmoveClock * 0.5;
         char clockBuffer[32];
         std::snprintf(clockBuffer, sizeof(clockBuffer), "50-move: %.1f", halfmoveDisplay);

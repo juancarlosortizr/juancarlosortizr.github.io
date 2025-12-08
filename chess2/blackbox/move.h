@@ -141,6 +141,8 @@ private:
         }
     }
 
+    std::string compute_notation(const Board& board) const;
+
 public:
     Move(int fx, int fy, int tx, int ty, const Board& board)
         : fromX(fx), fromY(fy), toX(tx), toY(ty),
@@ -195,6 +197,23 @@ public:
             os << " INVALID";
         }
         return os;
+    }
+
+    friend bool operator==(const Move& lhs, const Move& rhs) {
+        return lhs.fromX == rhs.fromX &&
+               lhs.fromY == rhs.fromY &&
+               lhs.toX == rhs.toX &&
+               lhs.toY == rhs.toY &&
+               lhs.white == rhs.white &&
+               lhs.promote_to == rhs.promote_to &&
+               lhs.attempted_castling == rhs.attempted_castling &&
+               lhs.attempted_kingside_castling == rhs.attempted_kingside_castling &&
+               lhs.attempted_capture_or_pawn_move == rhs.attempted_capture_or_pawn_move &&
+               lhs.attempted_capture == rhs.attempted_capture &&
+               lhs.attempted_promotion == rhs.attempted_promotion &&
+               lhs.attempted_en_passant == rhs.attempted_en_passant &&
+               lhs.attempted_initial_2_square_pawn_move == rhs.attempted_initial_2_square_pawn_move &&
+               lhs.valid == rhs.valid;
     }
 };
 

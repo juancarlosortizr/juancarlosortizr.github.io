@@ -19,9 +19,8 @@
 * - castling rights
 * - en-passant target (active when a pawn just moved 2 squares)
 * - whose turn it is
-* - How many half-moves since last capture or pawn move (for 50-move rule)
 * Notice for 3-fold repetition, castling rights, en passant rights, and whose turn it is
-* all matter, but the halfmove clock does not matter.
+* all matter.
 *
 * This just stores the state, no move legality logic (this is in moves.h).
 * It does knows the basics of how pieces attack, including:
@@ -48,8 +47,6 @@ const int knight_offs[8][2] = {
 const int bishop_dirs[4][2] = {{1,1},{1,-1},{-1,1},{-1,-1}};
 const int rook_dirs[4][2] = {{1,0},{-1,0},{0,1},{0,-1}};
 
-const int FIFTY_MOVE_RULE_LIMIT = 4;
-
 const PieceKind startingBackRank[8] = {
     PieceKind::Rook,
     PieceKind::Knight,
@@ -74,17 +71,13 @@ private:
     // player to move: true = white to move, false = black to move
     bool white_to_move = true;
 
-    // How many half-moves since last capture or pawn move (for 50-move rule)
-    int halfmove_clock = 0;
-
 public:
     // Construtor produces an empty board with no casting nor en passant rights.
     // For a starting position, call reset().
     Board(void) : pieces(),
                    castling(),
                    en_passant(),
-                   white_to_move(true),
-                   halfmove_clock(0)
+                   white_to_move(true)
     {
         for (int i=0; i<8; i++) {
             for (int j=0; j<8; j++) {
@@ -108,7 +101,6 @@ public:
         castling = CastlingRights{true, true, true, true};
         en_passant = EnPassant{};
         white_to_move = true;
-        halfmove_clock = 0;
 
         for (int i=0; i<8; i++) {
             for (int j=0; j<8; j++) {
@@ -201,21 +193,7 @@ public:
     void set_castling(CastlingRights cr) { castling = cr; }
     CastlingRights get_castling_rights() const { return castling; }
 
-    friend std::ostream& operator<<(std::ostream& os, const Board& board) {
-        os << "Pieces:";
-        if (board.pieces.empty()) {
-            os << " none";
-        } else {
-            for (const auto& piece : board.pieces) {
-                os << ' ' << piece;
-            }
-        }
-        os << "\nTurn: " << (board.white_to_move ? "White" : "Black");
-        os << "\nEn Passant: " << board.en_passant.to_string();
-        os << "\nCastling: " << board.castling;
-        os << "\nHalfmove Clock: " << board.halfmove_clock;
-        return os;
-    }
+    friend std::ostream& operator<<(std::ostream& os, const Board& board);
 
     // Is castling a valid move?
     bool can_castle(const bool white, const bool kingside) const {
@@ -259,18 +237,9 @@ public:
     }
                         
 
-    // Helpers: Halfmove clock
-    int get_halfmove_clock(void) const { return halfmove_clock; }
-    void increase_halfmove_clock(void) {
-        halfmove_clock++;
-        if (halfmove_clock > FIFTY_MOVE_RULE_LIMIT) {
-            throw std::runtime_error("Increased half-move clock beyond FIFTY_MOVE_RULE_LIMIT; you didn't catch a draw");
-        }
-    }
-    void reset_halfmove_clock(void) { halfmove_clock = 0; }
-
     /*
     * Board::get_targets()
+    * TODO move to an attribute? That is recomputed upon every move
     *
     * Generate all target squares that are reachable by the piece at index idx.
     * This always considers possible en-passant captures or diagonal pawn captures.
@@ -486,6 +455,8 @@ public:
         const std::vector<Piece> rhs = sorted_pieces(other);
         return lhs == rhs;
     }
+
+    friend std::ostream& operator<<(std::ostream& os, const Board& board);
 };
 
 #endif // BOARD_H

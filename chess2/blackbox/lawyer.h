@@ -14,6 +14,7 @@
 #include "en_passant.h"
 
 constexpr int PROMO_OPTIONS = 4;
+const int FIFTY_MOVE_RULE_LIMIT = 100;
 
 static constexpr PieceKind promoKinds[PROMO_OPTIONS] = {
     PieceKind::Queen,
@@ -154,12 +155,6 @@ public:
 
         board.set_castling(cr);
 
-        if (move.is_attempted_capture_or_pawn_move()) {
-            board.reset_halfmove_clock();
-        } else {
-            board.increase_halfmove_clock();
-        }
-
         board.toggle_white_to_move();
    }
 
@@ -178,7 +173,6 @@ public:
         // Simulate the move and see if the player who moved is left in check afterwards
         Board sim = board;
         in_simulation = true;
-        sim.reset_halfmove_clock();  // For purposes of simulating, we don't need to rememver the fifty move clock.
         perform_move(sim, move);
         const bool output = !(sim.is_player_in_check(move.is_a_white_move()));
         in_simulation = false;
@@ -200,7 +194,7 @@ public:
     // This can be because of a stalemate or checkmate
     // If at least one legal move, the game continues
     // The history should NOT include this board itself.
-    GameStatus game_status(const Board& board, const std::vector<Board>& history) {
+    GameStatus game_status(const Board& board, const std::vector<Board>& history, int halfmove_clock = 0) {
         const bool white_to_move = board.is_white_to_move();
         const bool player_to_move_in_check = board.is_player_in_check(white_to_move);
         const int piece_count = board.get_piece_count();
@@ -226,7 +220,7 @@ public:
                 }
                 if (legal(board, candidate)) {
                     if (repeats >= 2) { return GameStatus::ThreefoldRepetition; }
-                    if (board.get_halfmove_clock() >= FIFTY_MOVE_RULE_LIMIT) { return GameStatus::FiftyMoveRule; }
+                    if (halfmove_clock >= FIFTY_MOVE_RULE_LIMIT) { return GameStatus::FiftyMoveRule; }
                     return GameStatus::Ongoing;
                 }
             }
@@ -239,7 +233,7 @@ public:
     /* 
     * TODO Move to DFS
     */
-    bool has_mate_in_one(const Board& board) {
+    bool has_mate_in_one(const Board& board, int halfmove_clock = 0) {
         const bool white_to_move = board.is_white_to_move();
         const int piece_count = board.get_piece_count();
         auto leads_to_checkmate = [&](const Move& candidate) -> bool {
@@ -252,7 +246,8 @@ public:
             // The following is NOT a simulation, since it still requires legal moves.
             Board hypoth(board);
             perform_move(hypoth, candidate);
-            return game_status(hypoth, std::vector<Board>{}) == GameStatus::Checkmate;
+            const int next_halfmove = candidate.is_attempted_capture_or_pawn_move() ? 0 : (halfmove_clock + 1);
+            return game_status(hypoth, std::vector<Board>{}, next_halfmove) == GameStatus::Checkmate;
         };
         for (int idx = 0; idx < piece_count; ++idx) {
             const Piece& mover = board.get_piece(idx);

@@ -573,73 +573,50 @@ int main(int argc, char** argv) {
         }
     };
 
+    auto undo_single_move = [&]() -> bool {
+        if (!game.undo()) return false;
+        if (!notation_undo_stack.empty()) {
+            notation_redo_stack.push_back(notation_undo_stack.back());
+            notation_undo_stack.pop_back();
+        }
+        return true;
+    };
+    auto redo_single_move = [&]() -> bool {
+        if (!game.redo()) return false;
+        if (!notation_redo_stack.empty()) {
+            notation_undo_stack.push_back(notation_redo_stack.back());
+            notation_redo_stack.pop_back();
+        }
+        return true;
+    };
     auto undo_last_move = [&]() -> bool {
-        const int moves_to_rewind = 2;
-        if ((int)notation_undo_stack.size() < moves_to_rewind) {
-            return false;
-        }
-        int undone = 0;
-        while (undone < moves_to_rewind) {
-            if (!game.undo()) {
-                break;
-            }
-            if (!notation_undo_stack.empty()) {
-                notation_redo_stack.push_back(notation_undo_stack.back());
-                notation_undo_stack.pop_back();
-            }
-            ++undone;
-        }
-        if (undone == moves_to_rewind) {
-            clear_interaction_state();
-            apply_status_ui_state();
-            refresh_move_display();
-            ai_pending_move = false;
-            return true;
-        }
-        while (undone > 0) {
-            if (game.redo()) {
-                if (!notation_redo_stack.empty()) {
-                    notation_undo_stack.push_back(notation_redo_stack.back());
-                    notation_redo_stack.pop_back();
-                }
-            }
-            --undone;
-        }
-        return false;
+        bool moved = false;
+        do {
+            if (!undo_single_move()) break;
+            moved = true;
+        } while (game.board().is_white_to_move() != HUMAN_PLAYS_WHITE);
+        if (!moved) return false;
+        clear_interaction_state();
+        apply_status_ui_state();
+        refresh_move_display();
+        ai_pending_move = false;
+        return true;
     };
     auto redo_last_move = [&]() -> bool {
-        const int moves_to_apply = 2;
-        if ((int)notation_redo_stack.size() < moves_to_apply) {
-            return false;
-        }
-        int redone = 0;
-        while (redone < moves_to_apply) {
-            if (!game.redo()) {
-                break;
-            }
-            if (!notation_redo_stack.empty()) {
-                notation_undo_stack.push_back(notation_redo_stack.back());
-                notation_redo_stack.pop_back();
-            }
-            ++redone;
-        }
-        if (redone == moves_to_apply) {
-            clear_interaction_state();
-            apply_status_ui_state();
-            refresh_move_display();
-            ai_pending_move = false;
-            return true;
-        }
-        while (redone > 0) {
-            if (game.undo()) {
-                if (!notation_undo_stack.empty()) {
-                    notation_redo_stack.push_back(notation_undo_stack.back());
-                    notation_undo_stack.pop_back();
-                }
-            }
-            --redone;
-        }
-        return false;
+        bool moved = false;
+        do {
+            if (!redo_single_move()) break;
+            moved = true;
+        } while (game.board().is_white_to_move() != HUMAN_PLAYS_WHITE);
+
+        if (!moved) return false;
+        clear_interaction_state();
+        apply_status_ui_state();
+        refresh_move_display();
+        ai_pending_move =
+            (game.status() == GameStatus::Ongoing) &&
+            (game.board().is_white_to_move() == AI_PLAYS_WHITE);
+        return true;
     };
     auto mouse_to_board = [&](int mx, int my, int& cellX, int& cellY) -> bool {
         float relX = (float)mx - boardOffsetX;
@@ -798,7 +775,7 @@ int main(int argc, char** argv) {
         if (status != GameStatus::Ongoing) {
             trigger_game_over_popup();
         }
-        const bool mate_in_one_available = Lawyer::instance().has_mate_in_one(game.board());
+        const bool mate_in_one_available = Lawyer::instance().has_mate_in_one(game.board(), 0);
         if (mate_in_one_available) {
             play_mate_in_one_sound();
         }
@@ -896,7 +873,9 @@ int main(int argc, char** argv) {
                         if (promo_result != 0) {
                             throw std::runtime_error("Promotion moves should always be legal");
                         }
-                        ai_pending_move = (game.board().is_white_to_move() == AI_PLAYS_WHITE);
+                        ai_pending_move =
+                            (game.status() == GameStatus::Ongoing) &&
+                            (game.board().is_white_to_move() == AI_PLAYS_WHITE);
                         delete pending_move;
                         pending_move = nullptr;
                     }
@@ -951,7 +930,9 @@ int main(int argc, char** argv) {
                                 if (move_result != 0) {
                                     play_bounce_sound();
                                 } else {
-                                    ai_pending_move = (game.board().is_white_to_move() == AI_PLAYS_WHITE);
+                                    ai_pending_move =
+                                        (game.status() == GameStatus::Ongoing) &&
+                                        (game.board().is_white_to_move() == AI_PLAYS_WHITE);
                                 }
                             }
                         }
@@ -979,7 +960,7 @@ int main(int argc, char** argv) {
                 ai_pending_move = false;
             } else {
                 try {
-                    Move ai_move = dfs_agent.explore(game.board());
+                    Move ai_move = dfs_agent.explore(game.board(), game.get_halfmove_clock());
                     const int ai_result = make_move_and_play_sound(ai_move);
                     if (ai_result != 0) {
                         ai_pending_move = false;
@@ -1101,7 +1082,7 @@ int main(int argc, char** argv) {
             }
         }
 
-        const int halfmoveClock = game.board().get_halfmove_clock();
+        const int halfmoveClock = game.get_halfmove_clock();
         const double halfmoveDisplay = halfmoveClock * 0.5;
         char clockBuffer[32];
         std::snprintf(clockBuffer, sizeof(clockBuffer), "50-move: %.1f", halfmoveDisplay);
